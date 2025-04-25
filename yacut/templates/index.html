@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/static/img/fav/apple-touch-icon.png">
+  <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+  <link rel="icon" href="/static/img/fav/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/img/fav/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/static/img/fav/favicon-16x16.png">
+  <title>YaCut - укоротитель ссылок</title>
+</head>
+<body>
+  <header class="pb-5">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow-sm">
+      <div class="container">
+        <div class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </div>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-link" href="/">Главная</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+  
+  <main>
+    <section class="container my-5 px-4">
+      <h1 class="text-center"><span style="color:red">Ya</span>Cut</h1>
+      <p class="text-center my-4">
+        Создайте короткую ссылку автоматически или предложите свой вариант
+      </p>
+      <div class="container">
+        <div class="row my-3">
+          <div class="col-sm"></div>
+          <div class="col-sm">
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                <div class="alert alert-danger">
+                  {% for message in messages %}
+                    {{ message }}<br>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
+            <form method="POST" novalidate>
+              {{ form.hidden_tag() }}
+              <input class="form-control form-control-lg py-2 mb-3" id="form-title" maxlength="2000" name="original_link" placeholder="Введите ссылку" required type="text" value="{{ form.original_link.data or '' }}">
+              {% if form.original_link.errors %}
+                <p class="text-danger">
+                  {% for error in form.original_link.errors %}
+                    {{ error }}<br>
+                  {% endfor %}
+                </p>
+              {% endif %}
+              <input class="form-control form-control-lg py-2 mb-3" id="form-link" maxlength="16" name="custom_id" placeholder="Введите короткую ссылку" type="text" value="{{ form.custom_id.data or '' }}">
+              {% if form.custom_id.errors %}
+                <p class="text-danger">
+                  {% for error in form.custom_id.errors %}
+                    {{ error }}<br>
+                  {% endfor %}
+                </p>
+              {% endif %}
+              <input class="btn btn-primary" id="submit" name="submit" type="submit" value="Сократить">
+            </form>
+          </div>
+          <div class="col-sm"></div>
+        </div>
+      </div>
+      {% if short_link %}
+        <div class="container">
+          <div class="row">
+            <div class="col-sm"></div>
+            <div class="col-sm">
+              <p class="text-center">
+                <h5 class="text-center">
+                  <a href="{{ short_link }}">{{ short_link }}</a>
+                </h5>
+              </p>
+            </div>
+            <div class="col-sm"></div>
+          </div>
+        </div>
+      {% endif %}
+    </section>
+  </main>
+
+  <footer class="fixed-bottom border-top text-center py-3">
+    <p>Укоротитель ссылок YaCut</p>
+  </footer>
+</body>
+<script src="/static/js/jquery-3.2.1.slim.min.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+</html>
