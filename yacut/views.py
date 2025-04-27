@@ -1,33 +1,25 @@
 from flask import flash, render_template, url_for, redirect
 
-from . import app, db
-from .constants import SHORT_ID_LENGTH
+from . import app
 from .forms import URLForm
-from .models import URLMap
-from .utils import check_unique_short_id, get_unique_short_id
+from .services import ShortLinkService
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index_view():
     form = URLForm()
     if form.validate_on_submit():
-        short = form.custom_id.data or get_unique_short_id()
-
-        if len(short) > SHORT_ID_LENGTH:
-            flash(
-                (
-                    f'Короткая ссылка не должна превышать '
-                    f'{SHORT_ID_LENGTH} символов'
-                )
+        try:
+            url_map = ShortLinkService.create_short_link(
+                original_url=form.original_link.data,
+                custom_id=form.custom_id.data
             )
+        except ShortLinkService.InvalidShortIdError as e:
+            flash(str(e))
             return render_template('index.html', form=form)
-        if not check_unique_short_id(short):
-            flash('Предложенный вариант короткой ссылки уже существует.')
+        except ShortLinkService.ShortIdExistsError as e:
+            flash(str(e))
             return render_template('index.html', form=form)
-
-        url_map = URLMap(original=form.original_link.data, short=short)
-        db.session.add(url_map)
-        db.session.commit()
 
         flash('Получившаяся короткая ссылка:')
         return render_template(
@@ -44,5 +36,8 @@ def index_view():
 
 @app.route('/<string:short_id>', strict_slashes=False)
 def mapping_redirect(short_id):
-    url_map = URLMap.query.filter_by(short=short_id).first_or_404()
-    return redirect(url_map.original)
+    try:
+        original_url = ShortLinkService.get_original_url(short_id)
+    except ShortLinkService.ShortLinkError:
+        return render_template('404.html'), 404
+    return redirect(original_url)

@@ -1,10 +1,16 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>500 Internal Server Error</title>
-</head>
-<body>
-    <h1>500 Internal Server Error</h1>
-    <p>Something went wrong on the server.</p>
-</body>
-</html>
+{% extends 'base.html' %} 
+{% block title %}500. Ошибка!{% endblock %}
+{% block content %}
+    <main>
+        <section class="container my-5 px-4">
+        <h1 class="text-center">Ошибка 500</h1>
+        <p class="text-center my-4">
+            Возможно, на сервере произошёл сбой или проводятся кратковременные
+            технические работы. Попробуйте обновить страницу сейчас или через пару
+            минут.
+        </p>
+        <div class="container">
+            <div class="row my-3">
+            <div class="col-sm"></div>
+            <div class="col-sm">
+{% endblock %}
